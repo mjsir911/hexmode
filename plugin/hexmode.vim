@@ -106,6 +106,8 @@ if has("autocmd")
             \ if exists('b:editHex') && b:editHex |
             \   let b:editHex = 0 |
             \ endif
+ 
+        autocmd BufReadPre * if system('file ' . shellescape(expand('%:p'))) !~# 'text' | setlocal binary | endif
 
         " Convert to hex on startup for binary files automatically.
         au BufReadPost *
