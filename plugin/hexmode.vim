@@ -40,8 +40,8 @@ function ToggleHex()
         " switch to hex editor
         silent %!xxd
         " set new options
-        let &l:bin=1 " make sure it overrides any textwidth, etc.
-        let &l:ft="xxd"
+        set binary " make sure it overrides any textwidth, etc.
+        set filetype=xxd
     else
         " set status
         let b:editHex=0
