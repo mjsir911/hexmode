@@ -65,6 +65,19 @@ endfunction
 " other things, and the terminal has a good chance of sending its response
 " right when the external program is executing.  Sadly, vim does not get
 " these escape sequences.  Want more details?  See fidian/hexmode#17.
+function s:IsBinaryAutodetect()
+    if !g:hexmode_autodetect
+        return v:false
+    endif
+    if executable('file')
+        let file = system("file --mime -b -L " . shellescape(expand("%:p")))
+        if file =~# "charset=binary" &&  file !~# "text/.*;"
+            return v:true
+        endif
+     endif
+     return v:false
+ endfunction
+
 function! s:IsHexmodeEditable()
     " Hexmode conflicts with the gzip plugin. Because we can't detect if
     " `vim -b` was used on the command line and because we can't disable
@@ -76,13 +89,6 @@ function! s:IsHexmodeEditable()
 
     " Otherwise, vim -b file should always work.
     if &l:binary
-        return 1
-    endif
-
-    " This match looks for characters that are not whitespace of various
-    " sorts, printable ASCII, extended ASCII, and not Unicode.  Not great,
-    " but fairly fast and fairly acceptable.
-    if g:hexmode_autodetect && !!search('[\x00-\x08\x0e-\x1f\x7f]', 'wn')
         return 1
     endif
 
@@ -106,8 +112,8 @@ if has("autocmd")
             \ if exists('b:editHex') && b:editHex |
             \   let b:editHex = 0 |
             \ endif
- 
-        autocmd BufReadPre * if system('file ' . shellescape(expand('%:p'))) !~# 'text' | setlocal binary | endif
+
+        autocmd BufReadPre * if s:IsBinaryAutodetect() | setlocal binary | endif
 
         " Convert to hex on startup for binary files automatically.
         au BufReadPost *
