@@ -34,6 +34,7 @@ function ToggleHex()
         " save old options
         let b:oldft = &l:ft
         let b:oldbin = &l:bin
+        let b:window = winsaveview()
         " set status
         let b:editHex=1
         " switch to hex editor
@@ -49,6 +50,7 @@ function ToggleHex()
         " restore old options
         let &l:ft = b:oldft
         let &l:bin = b:oldbin
+        call winrestview(b:window)
     endif
 
     " restore values for modified and read only state
